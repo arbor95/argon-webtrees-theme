@@ -10,18 +10,19 @@ use Fisharebest\Webtrees\Module\ModuleCustomTrait;
 use Fisharebest\Webtrees\Module\ModuleGlobalInterface;
 use Fisharebest\Webtrees\Module\ModuleGlobalTrait;
 use Fisharebest\Webtrees\View;
+use Fisharebest\Webtrees\Registry;
+
 
 return new class extends MinimalTheme implements ModuleCustomInterface, ModuleGlobalInterface {
     use ModuleCustomTrait;
     use ModuleGlobalTrait;
-
-    /**
-     * @return string
-     */
-    public function title(): string
-    {
-        return I18N::translate('Argon');
-    }
+	
+	private bool $this_theme_is_activated = false;
+		
+    public function title(): string { return 'Argon'; }
+    public function customModuleVersion(): string { return '3.8'; }
+	public function customModuleAuthorName(): string { return 'jchue'; }
+    public function customModuleSupportUrl(): string { return 'https://github.com/jchue/argon-webtrees-theme/issues'; }
 
     /**
      * Misecellaneous dimensions, fonts, styles, etc.
@@ -55,7 +56,9 @@ return new class extends MinimalTheme implements ModuleCustomInterface, ModuleGl
      * Bootstrap the module
      */
     public function boot(): void
-    {
+    {		
+		$this->this_theme_is_activated = true;
+		
         // Register a namespace for our views.
         View::registerNamespace($this->name(), $this->resourcesFolder() . 'views/');
 
@@ -158,8 +161,10 @@ return new class extends MinimalTheme implements ModuleCustomInterface, ModuleGl
      */
     public function bodyContent(): string
     {
-        $bodyContent = '<script src="' . $this->assetUrl('js/theme.js') .'"></script>';
-
-        return $bodyContent;
+        if ($this->this_theme_is_activated) {
+            return '<script src="' . $this->assetUrl('js/theme.js') . '"></script>';
+        } else {
+            return '';
+        }
     }
 };
